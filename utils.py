@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.metrics import mean_squared_error
 from scipy.integrate import solve_ivp
+import matplotlib.pyplot as plt
 
 def load_data(str_file):
     """
@@ -61,3 +62,16 @@ def apply_estimator(df, X, Y, n_dt, t_max=1):
     return sols, mses
 
 
+def plot_vector_field(dX, min_bound, max_bound, n_1d_samples):
+    X1, X2 = np.meshgrid(np.linspace(min_bound[0], max_bound[0], n_1d_samples), np.linspace(min_bound[1], max_bound[1], n_1d_samples))
+    X = np.stack([X1, X2]).reshape((2, n_1d_samples**2)).T
+    
+    V = dX(0, X)
+    U1, U2 = V.T.reshape(2, n_1d_samples, n_1d_samples)
+    
+    _, axs = plt.subplots()
+    vfn = np.linalg.norm(np.array([U1, U2]), axis=0)
+    axs.streamplot(X1, X2, U1, U2, density=1, linewidth = 5*vfn / vfn.max(), color=vfn)
+    axs.set_title("Predicted Vector Field")
+    
+    return U1, U2, X1, X2
