@@ -1,6 +1,5 @@
 import numpy as np
 from numpy.linalg import lstsq, norm
-from sklearn.metrics import mean_squared_error
 from scipy.integrate import solve_ivp
 
 
@@ -105,7 +104,7 @@ def estimate_vector_field(X, Y, Dt):
 
 def apply_phi(sample_points, X, e, use_e_squared):
     """
-    Apply a nonlinear transformations of X using radial functions with same bandwidth
+    Apply a nonlinear transformation of X using radial functions with same bandwidth
 
     args
         sample_points (list):
@@ -123,44 +122,3 @@ def apply_phi(sample_points, X, e, use_e_squared):
     """
     applied_phi = [radial_basis_fun(x_l, X, e, use_e_squared) for x_l in sample_points]
     return np.asarray(applied_phi).T
-
-
-def apply_estimator(df, X, Y, n_dt, t_max=1):
-    """
-    Predicts X(t) with df = V the vector field, and compares the comparaison to a given position in the futur
-
-    args
-        df (lambda t, x):
-            vector field - each points' derivative in time
-        X (np.ndarray):
-            data points at t=0
-        Y (np.ndarray):
-            ground truth at t=dt (unknown dt)
-        n_dt (int):
-            number of samples in time (from t=0 to t=t_max)
-        t_max (opt. scalar):
-            prediction's duration
-
-    returns:
-        sols (np.ndarray):
-            Trajectories of each data points
-        mses (np.ndarray):
-            mean square error for each timestamp
-    """
-
-    # predict trajectories for each data points
-    sols = []
-    for x in X:
-        sol = solve_ivp(df, [0, t_max], x, t_eval=np.linspace(0, t_max, n_dt))
-        sols.append(sol.y)
-
-    sols = np.asarray(sols)
-
-    # compute mean square error for each timestamp
-    mses = []
-    for i in range(n_dt):
-        mses.append(mean_squared_error(Y, sols[:,:,i]))
-    mses = np.asarray(mses)
-
-    return sols, mses
-
