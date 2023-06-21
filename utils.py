@@ -63,6 +63,25 @@ def apply_estimator(df, X, Y, n_dt, t_max=1):
 
 
 def plot_vector_field(dX, min_bound, max_bound, n_1d_samples):
+    """Plots the vector field induced by dX (2d)
+
+    Args:
+        dX (function): 
+            Takes sample points in 2d space, returns its tangeant vector
+        min_bound (list of 2 scalars):
+            min bounds in 2d space of the plot
+        max_bound (list of 2 scalars): 
+            max bounds in 2d space of the plot
+        n_1d_samples (int): 
+            number of samples to compute the vector field (in 1d)
+            total number of samples is therefore squared
+            
+    Returns:
+        U1, U2 (np.ndarray):
+            vectorfield as a 2d meshgrid
+        X1, X2 (np.ndarray):
+            sample points as a 2d meshgrid
+    """
     X1, X2 = np.meshgrid(np.linspace(min_bound[0], max_bound[0], n_1d_samples), np.linspace(min_bound[1], max_bound[1], n_1d_samples))
     X = np.stack([X1, X2]).reshape((2, n_1d_samples**2)).T
     
